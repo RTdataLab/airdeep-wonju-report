@@ -12,7 +12,12 @@
 let DAYS = Array.from({length:31},(_,i)=>`${i+1}`);
 const BLUE = ['#2D6BFF','#E5484D','#22C55E','#F59E0B','#7C3AED','#0F766E','#BE185D','#78716C'];
 const GRID = '#E5E9F0';
+const DATA_VERSION = '20260605-10';
 let HOLIDAYS = new Set();
+
+function dataUrl(path){
+  return `${path}?v=${DATA_VERSION}`;
+}
 
 /* ── CSV 파서 (따옴표 필드 지원) ───────────────────────────── */
 function parseCSV(text){
@@ -232,12 +237,12 @@ async function main(){
   let tempText, sensorText, operText, sumText, pieText, top5Text;
   try {
     const [t,st,o,s,p,t5] = await Promise.all([
-      fetch('data/temp.csv'),
-      fetch('data/sensor_temp.csv'),
-      fetch('data/oper.csv'),
-      fetch('data/summary.csv'),
-      fetch('data/db_pie.csv'),
-      fetch('data/top5.csv'),
+      fetch(dataUrl('data/temp.csv')),
+      fetch(dataUrl('data/sensor_temp.csv')),
+      fetch(dataUrl('data/oper.csv')),
+      fetch(dataUrl('data/summary.csv')),
+      fetch(dataUrl('data/db_pie.csv')),
+      fetch(dataUrl('data/top5.csv')),
     ]);
     if(!t.ok || !st.ok || !o.ok || !s.ok || !p.ok || !t5.ok) throw new Error('CSV 파일 응답 오류 (HTTP)');
     [tempText, sensorText, operText, sumText, pieText, top5Text] = await Promise.all([t.text(), st.text(), o.text(), s.text(), p.text(), t5.text()]);
@@ -287,7 +292,7 @@ async function main(){
     const sumTotal = pieRows.reduce((s,r)=>s+r.total,0) || 1;
     new Chart(elPie,{
       type:'doughnut',
-      plugins:[ChartDataLabels],
+      plugins: typeof ChartDataLabels === 'undefined' ? [] : [ChartDataLabels],
       data:{labels:pieRows.map(r=>r.name),datasets:[{
         data:pieRows.map(r=>r.total),
         backgroundColor:pieRows.map((_,i)=>pieColors[i%pieColors.length]),
