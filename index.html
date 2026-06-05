@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>실내 온습도 및 냉난방 가동 분석 · 원주시설관리공단</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="style.css?v=20260605-5">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+</head>
+<body>
+<div class="page">
+
+<div class="print-bar">
+  <button class="btn btn-ghost" onclick="window.print()">PDF로 저장 / 인쇄</button>
+</div>
+
+<!-- Header -->
+<header class="hdr">
+  <div class="hdr-eyebrow">Monthly Monitoring Report · Wonju Facilities</div>
+  <div class="hdr-title">실내 온습도 및 냉난방 가동 분석_원주시설관리공단</div>
+  <div class="hdr-provider-line">원주시설관리공단 실내 환경 및 냉방 사용량 분석 리포트</div>
+  <div class="hdr-meta">
+    <div class="hdr-badge">🏢 원주시설관리공단 전용 리포트</div>
+    <div class="hdr-meta-right">
+      <div class="hdr-period">기간<strong>2026.05.01 — 2026.05.31</strong></div>
+      <div class="provided-by">보고서 제공 · AirDeep</div>
+    </div>
+  </div>
+</header>
+
+<!-- 1. 한눈에 보기 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">1</span>이번 달 한눈에 보기 — 원주시설관리공단</div>
+    <div class="sec-sub">적정 운영 기준 20 — 26℃</div>
+  </div>
+  <div class="summary-grid">
+    <div class="kpi-wrap">
+      <div class="kpi-head">원주시설관리공단 핵심 지표</div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">전체 운영 기기</div>
+          <div class="kpi-value">117<span class="kpi-unit">대</span></div>
+          <div class="kpi-delta flat">온습도계 4 · 제어기 113</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">평균 실내온도</div>
+          <div class="kpi-value">23.1<span class="kpi-unit">℃</span></div>
+          <div class="kpi-delta flat">적정 20 — 26℃</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">일평균 가동시간</div>
+          <div class="kpi-value">1.5<span class="kpi-unit">h</span></div>
+          <div class="kpi-delta flat">전 구역 평균</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">적정온도 유지율</div>
+          <div class="kpi-value">84<span class="kpi-unit">%</span></div>
+          <div class="kpi-delta flat">20 — 26℃ 기준</div>
+        </div>
+      </div>
+      <div class="cmnt" style="margin-top:14px"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+        <div class="cmnt-text">5월은 5개 시설이 전반적으로 안정적으로 운영된 달로, 적정온도 유지율 84%를 기록했습니다. 종합체육관의 집중 가동(제어기당 일평균 8.44h)과 DB숙소 식당 조리실의 사실상 상시 운전(하루 평균 23.44h)이 이달의 핵심 관리 포인트입니다.</div>
+      </div>
+    </div>
+    <div class="alerts">
+      <div class="alerts-head">
+        <div class="alerts-title">주의가 필요한 항목</div>
+        <div class="alerts-count">3건</div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-tag tag-c">CHECK</div>
+        <div class="alert-body"><strong>종합체육관</strong> · 월 누적 3,138.89h · 제어기당 일평균 8.44h로 운영 강도 최고 — 행사 종료 후 잔여 가동 및 장시간 운전일 우선 확인</div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-tag tag-c">CHECK</div>
+        <div class="alert-body"><strong>국민체육센터</strong> · 31일 연속 가동 · 1층 일평균 가동시간 최고 — 층별 운영시간과 종료 스케줄 분리 점검 필요</div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-tag tag-w">ACTION</div>
+        <div class="alert-body"><strong>DB숙소</strong> · 식당 조리실 726.61h · 일평균 23.44h 상시 가동 수준 — 조리 종료 후 자동 OFF 및 야간 운전 기준 확인</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 시설 운영 현황 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">2</span>원주시설관리공단 시설별 기기 운영 현황</div>
+    <div class="sec-sub">5개 시설 · 온습도계 4대 · 제어기 113대 · 총 117대</div>
+  </div>
+  <div class="facility-grid">
+    <div class="facility-card highlight">
+      <div class="facility-name">종합운동장</div>
+      <div class="fac-nums">
+        <div class="fac-num"><div class="fac-num-val">1</div><div class="fac-num-lbl">온습도계</div></div>
+        <div class="fac-num"><div class="fac-num-val">7</div><div class="fac-num-lbl">제어기</div></div>
+        <div class="fac-num"><div class="fac-num-val">8</div><div class="fac-num-lbl">합계</div></div>
+      </div>
+      <div class="fac-bar"><span style="width:87.5%;background:#2D6BFF"></span><span style="width:12.5%;background:#CFE0FF"></span></div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-name">DB숙소</div>
+      <div class="fac-nums">
+        <div class="fac-num"><div class="fac-num-val">0</div><div class="fac-num-lbl">온습도계</div></div>
+        <div class="fac-num"><div class="fac-num-val">50</div><div class="fac-num-lbl">제어기</div></div>
+        <div class="fac-num"><div class="fac-num-val">50</div><div class="fac-num-lbl">합계</div></div>
+      </div>
+      <div class="fac-bar"><span style="width:100%;background:#2D6BFF"></span><span style="width:0%;background:#CFE0FF"></span></div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-name">치악체육관</div>
+      <div class="fac-nums">
+        <div class="fac-num"><div class="fac-num-val">0</div><div class="fac-num-lbl">온습도계</div></div>
+        <div class="fac-num"><div class="fac-num-val">6</div><div class="fac-num-lbl">제어기</div></div>
+        <div class="fac-num"><div class="fac-num-val">6</div><div class="fac-num-lbl">합계</div></div>
+      </div>
+      <div class="fac-bar"><span style="width:100%;background:#2D6BFF"></span><span style="width:0%;background:#CFE0FF"></span></div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-name">국민체육센터</div>
+      <div class="fac-nums">
+        <div class="fac-num"><div class="fac-num-val">3</div><div class="fac-num-lbl">온습도계</div></div>
+        <div class="fac-num"><div class="fac-num-val">33</div><div class="fac-num-lbl">제어기</div></div>
+        <div class="fac-num"><div class="fac-num-val">36</div><div class="fac-num-lbl">합계</div></div>
+      </div>
+      <div class="fac-bar"><span style="width:91.7%;background:#2D6BFF"></span><span style="width:8.3%;background:#CFE0FF"></span></div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-name">종합체육관</div>
+      <div class="fac-nums">
+        <div class="fac-num"><div class="fac-num-val">0</div><div class="fac-num-lbl">온습도계</div></div>
+        <div class="fac-num"><div class="fac-num-val">17</div><div class="fac-num-lbl">제어기</div></div>
+        <div class="fac-num"><div class="fac-num-val">17</div><div class="fac-num-lbl">합계</div></div>
+      </div>
+      <div class="fac-bar"><span style="width:100%;background:#2D6BFF"></span><span style="width:0%;background:#CFE0FF"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 실외기온 & 전체 실내온도 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">3</span>실내 기온 변화 및 구역별 실내온도 비교 분석</div>
+    <div class="sec-note">적정 운영 기준 20 — 26℃ · 구역별 개별 분석</div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-title">원주시설관리공단 구역별 일평균 실내온도 추이</div>
+    <div class="legend-row">
+      <span><span class="zone-dot"></span>적정 20 — 26℃</span>
+      <span><i style="background:#2D6BFF"></i>DB숙소</span>
+      <span><i style="background:#E5484D"></i>국민체육센터</span>
+      <span><i style="background:#22C55E"></i>종합운동장</span>
+      <span><i style="background:#F59E0B"></i>종합체육관</span>
+      <span><i style="background:#7C3AED"></i>치악체육관</span>
+    </div>
+    <div class="cw h220"><canvas id="c-all-temp"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">5월 한 달간 5개 시설의 평균 실내온도는 치악체육관 20.91℃부터 DB숙소 25.42℃까지 분포했습니다. DB숙소는 5월 31일 28.51℃까지 상승해 냉방 대응 확인이 필요하고, 치악체육관은 5월 5일 17.77℃까지 낮아져 저온 유지 구간을 함께 점검해야 합니다.</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-title">온습도계 설치 구역 기준 일평균 실내온도 추이</div>
+    <div class="legend-row">
+      <span><i style="background:#E5484D"></i>국민체육센터 1층</span>
+      <span><i style="background:#22C55E"></i>국민체육센터 2층</span>
+      <span><i style="background:#F59E0B"></i>국민체육센터 지하</span>
+    </div>
+    <div class="cw h200"><canvas id="c-outdoor-vs"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#60A5FA"></div>
+      <div class="cmnt-text">국민체육센터 온습도계 기준으로 2층 평균온도는 25.21℃로 가장 높고, 5월 19일 27.04℃까지 상승했습니다. 1층도 5월 18일 27.00℃를 기록해 상층부 중심의 냉방 기준을 확인해야 하며, 지하는 평균 24.25℃로 상대적으로 안정적입니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 시설별 가동일수 & 가동시간 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">4</span>구역별 냉난방기 가동일수 및 가동률 비교</div>
+    <div class="sec-note">본 가동시간은 진동센서 기반 추정값이며, 실제 가동시간과 차이가 있을 수 있습니다.</div>
+  </div>
+
+  <div class="chart-2col">
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="chart-card-title">원주시설관리공단 구역별 가동일수</div>
+      <div class="cw h246"><canvas id="c-oper-days"></canvas></div>
+      <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+        <div class="cmnt-text">DB숙소, 국민체육센터, 종합체육관은 31일 모두 가동되어 상시 운영 시설에 가까운 패턴입니다. 종합운동장은 24일, 치악체육관은 21일만 가동되어 행사일 또는 이용일 중심으로 운전된 것으로 보이며, 상시 가동 시설은 자동 종료 기준 점검이 우선입니다.</div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="chart-card-title">원주시설관리공단 월별 구역별 전체 제어기 누적 가동시간</div>
+      <div class="chart-card-note">단위: h · 제어기수 및 일평균 가동시간 함께 표시</div>
+      <div class="cw h220"><canvas id="c-oper-avg"></canvas></div>
+      <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">누적 가동시간 집계 기준 종합체육관은 3,138.89h로 가장 길게 가동되었고, 국민체육센터도 2,205.62h로 높은 수준입니다. 특히 종합체육관은 제어기 12대 기준 제어기당 일평균 8.44h로, 단순 기기 수보다 실제 운전 강도가 큰 구역입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 시설별 상세 가동시간 추이 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">5</span>시설별 주요 공간 가동시간 상세 추이</div>
+    <div class="sec-sub">PDF 세부 공간 기준 · 월간 집계 기반 일별 패턴</div>
+  </div>
+
+  <!-- 종합운동장 -->
+  <div class="facility-divider">종합운동장</div>
+  <div class="chart-card">
+    <div class="chart-card-title">종합운동장 사무공간별 일평균 냉난방기 가동시간</div>
+    <div class="legend-row">
+      <span><i style="background:#2D6BFF"></i>사무공간</span>
+      <span><i style="background:#E5484D"></i>휴식/대기공간</span>
+      <span><i style="background:#22C55E"></i>기타공간</span>
+    </div>
+    <div class="cw h200"><canvas id="c-main-oper"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">종합운동장은 사무공간 41.45h, 기타공간 29.63h로 가동이 제한적으로 나타났습니다. 사무공간은 13일만 가동되었고, 기타공간은 5월 31일 12.08h로 특정일 집중이 커 행사 일정 또는 임시 사용일 기준으로 스케줄을 분리하는 것이 적합합니다.</div>
+    </div>
+  </div>
+
+  <!-- DB숙소 -->
+  <div class="facility-divider">DB숙소</div>
+  <div class="chart-card">
+    <div class="chart-card-title">DB숙소 구분별 냉난방기 총 가동시간 비중</div>
+    <div class="chart-card-note">단위: h · 조각 크기는 총가동시간 기준, 하루평균 함께 표시</div>
+    <div class="legend-row">
+      <span><i style="background:#2D6BFF;width:12px;height:12px;border-radius:3px"></i>식당 조리실</span>
+      <span><i style="background:#C7D6F5;width:12px;height:12px;border-radius:3px"></i>그 외 DB숙소</span>
+    </div>
+    <div class="cw h260"><canvas id="c-dg-oper"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">DB숙소 가동시간은 식당 조리실 726.61h, 그 외 구역 31.30h로 조리실에 약 96%가 집중되어 있습니다. 조리실은 하루 평균 23.44h로 사실상 상시 가동 상태에 가까우므로, 조리 종료 후 자동 OFF와 야간 설정 기준을 우선 점검해야 합니다.</div>
+    </div>
+  </div>
+
+  <!-- 치악체육관 -->
+  <div class="facility-divider">치악체육관</div>
+  <div class="chart-card">
+    <div class="chart-card-title">치악체육관 주요 공간별 일평균 냉난방기 가동시간</div>
+    <div class="legend-row">
+      <span><i style="background:#2D6BFF"></i>사무실</span>
+      <span><i style="background:#E5484D"></i>남자휴게실</span>
+      <span><i style="background:#22C55E"></i>여자 휴게실</span>
+      <span><i style="background:#F59E0B"></i>귀빈실</span>
+    </div>
+    <div class="cw h180"><canvas id="c-park-oper"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">치악체육관은 남자휴게실 68.60h, 여자 휴게실 39.30h, 사무실 31.02h 순으로 가동되었습니다. 평균 실내온도는 20.91℃로 가장 낮은 편이므로, 행사일 외 냉방 잔여 가동과 휴게공간의 설정온도 과냉 여부를 함께 확인하는 것이 좋습니다.</div>
+    </div>
+  </div>
+
+  <!-- 국민체육센터 -->
+  <div class="facility-divider">국민체육센터</div>
+  <div class="chart-card">
+    <div class="chart-card-title">국민체육센터 층별 일평균 냉난방기 가동시간</div>
+    <div class="legend-row">
+      <span><i style="background:#2D6BFF"></i>1층</span>
+      <span><i style="background:#E5484D"></i>2층</span>
+      <span><i style="background:#22C55E"></i>지하</span>
+    </div>
+    <div class="cw h200"><canvas id="c-gym-oper"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">국민체육센터는 1층이 157.92h로 가장 많이 가동되었고, 지하 49.73h, 2층 17.66h 순으로 나타났습니다. 1층은 5월 26일 10.37h까지 증가해 장시간 운전일을 중심으로 이용 종료 후 잔여 가동 여부를 확인해야 합니다.</div>
+    </div>
+  </div>
+
+  <!-- 종합체육관 -->
+  <div class="facility-divider">종합체육관</div>
+  <div class="chart-card">
+    <div class="chart-card-title">종합체육관 주요 공간별 일평균 냉난방기 가동시간</div>
+    <div class="legend-row">
+      <span><i style="background:#2D6BFF"></i>체육사업부 사무실</span>
+      <span><i style="background:#E5484D"></i>휴게공간</span>
+    </div>
+    <div class="cw h200"><canvas id="c-park2-oper"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">종합체육관 상세 그래프에서는 체육사업부 사무실 80.88h, 휴게공간 43.52h가 확인됩니다. 시설 전체 누적은 3,138.89h로 가장 높으므로, 주요 공간 외 장시간 운전 구역까지 포함해 종료 스케줄과 실제 이용시간을 대조해야 합니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 종합 분석 테이블 -->
+<section>
+  <div class="sec-head">
+    <div class="sec-title"><span class="idx">6</span>구역별 종합 분석 및 절감 액션</div>
+    <div class="sec-sub">에어컨 사용량 중심 · 전력 절감을 위한 우선 조치</div>
+  </div>
+  <div class="chart-card">
+    <div style="overflow-x:auto;margin-bottom:0">
+      <table class="analysis-table" id="summaryTable">
+        <colgroup>
+          <col class="sum-col-rank">
+          <col class="sum-col-zone">
+          <col class="sum-col-hours">
+          <col class="sum-col-temp">
+          <col class="sum-col-judge">
+          <col class="sum-col-action">
+        </colgroup>
+        <thead>
+          <tr><th>우선순위</th><th>구역</th><th>월 가동시간</th><th>평균온도</th><th>판단</th><th>권장 액션</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="cmnt" style="margin-top:12px"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">절감 우선순위는 누적 가동시간 기준으로 종합체육관과 국민체육센터가 가장 높고, DB숙소는 식당 조리실 집중 운전이 핵심입니다. 전력사용량 절감을 위해서는 전체 냉방을 일괄 제한하기보다 장시간 운전일, 실사용 종료 후 잔여 가동, 특정 공간 상시 운전을 순서대로 줄이는 방식이 효과적입니다.</div>
+    </div>
+  </div>
+
+  <!-- TOP5 -->
+  <div class="top5-grid" style="margin-top:14px">
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="top5-title">월간 누적 가동시간 TOP5</div>
+      <div class="t5bw"><canvas id="c-t5in"></canvas></div>
+      <table class="t5tbl"><thead><tr><th>#</th><th>구역</th><th>총(h)</th><th>장비</th><th>일평균</th></tr></thead><tbody id="t5inB"></tbody></table>
+      <div class="cmnt" style="margin-top:12px"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+        <div class="cmnt-text">TOP5 집계 기준 국민체육센터가 2,579.17h로 가장 높고, DB숙소 795.33h, 종합운동장 567.67h 순으로 나타났습니다. 국민체육센터는 제어기 29대 규모의 영향이 크므로 층별 종료 스케줄을 먼저 나누고, DB숙소는 식당 조리실 상시 가동 여부를 별도 관리하는 방식이 적합합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-note">본 가동시간은 진동센서 기반 추정값이며 실제 가동시간과 차이가 있을 수 있습니다.</div>
+  <div style="text-align:right;flex-shrink:0">COPYRIGHT(C) AirDeep. ALL RIGHTS RESERVED.<br>대표전화 : 1644-8626 | 팩스번호 : 031-212-0610 | 경기도 수원시 영통구 광교로 156, 303호(광교비즈니스센터)</div>
+</footer>
+</div>
+
+<script src="app.js?v=20260605-9"></script>
+</body>
+</html>
