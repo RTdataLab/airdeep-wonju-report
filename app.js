@@ -1,12 +1,9 @@
 /* ============================================================
    원주시설관리공단 월간 모니터링 리포트 — 차트 렌더링
-   데이터는 data/ 폴더의 CSV 3장에서 읽어옵니다.
-     - data/temp.csv        : 일자별 구역 온도
-     - data/sensor_temp.csv : 온습도계 설치 구역 온도
-     - data/oper.csv        : 일자별 "시설·구역" 가동시간
-     - data/summary.csv     : 구역별 종합 분석 (KPI/테이블/누적막대)
-     - data/top5.csv        : 월간 누적 가동시간 TOP5
-   CSV만 수정하고 새로고침하면 리포트가 갱신됩니다.
+
+   데이터 파일명은 아래 DATA_FILES 설정표에서 관리합니다.
+   데이터팀이 보낸 CSV를 그 이름 그대로 data/ 폴더에 넣으면
+   새로고침 시 리포트가 자동 갱신됩니다. (파일명이 바뀌면 설정표만 수정)
    ============================================================ */
 
 let DAYS = Array.from({length:31},(_,i)=>`${i+1}`);
@@ -14,9 +11,28 @@ const BLUE = ['#2D6BFF','#E5484D','#22C55E','#F59E0B','#7C3AED','#0F766E','#BE18
 const GRID = '#E5E9F0';
 let HOLIDAYS = new Set();
 
-function dataUrl(path){
+/* ============================================================
+   ✏️ 데이터 파일 설정표 — 데이터팀 파일명을 그대로 적으면 됩니다.
+   매달 같은 이름으로 data/ 폴더에 넣으면 리포트가 자동 갱신됩니다.
+   파일명이 바뀌면 아래 값만 고치세요. (CSV만 지원)
+   ============================================================ */
+const DATA_FILES = {
+  temp:       '3-1.csv',  // 섹션3-1 — 구역별 일평균 실내온도
+  sensorTemp: '3-2.csv',  // 섹션3-2 — 온습도계 설치 구역 온도
+  days:       '4-1.csv',  // 섹션4-1 — 구역별 가동일수
+  operTotal:  '4-2.csv',  // 섹션4-2 — 구역별 누적 가동시간
+  fac1:       '5-1.csv',  // 섹션5-1 — 종합운동장 공간별
+  dbPie:      '5-2.csv',  // 섹션5-2 — DB숙소 구분별 비중(파이)
+  fac3:       '5-3.csv',  // 섹션5-3 — 치악체육관 공간별
+  fac4:       '5-4.csv',  // 섹션5-4 — 국민체육센터 층별
+  fac5:       '5-5.csv',  // 섹션5-5 — 종합체육관 공간별
+  summary:    '6-1.csv',  // 섹션6-1 — 종합 분석표
+  top5:       '6-2.csv',  // 섹션6-2 — 누적 가동시간 TOP5
+};
+
+function dataUrl(name){
   // CSV를 수정하면 항상 최신 데이터를 다시 불러오도록 매번 다른 값을 붙임
-  return `${path}?v=${Date.now()}`;
+  return `data/${name}?v=${Date.now()}`;
 }
 
 /* ── CSV 파서 (따옴표 필드 지원) ───────────────────────────── */
@@ -234,28 +250,28 @@ async function main(){
   Chart.defaults.font.family = "'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif";
   Chart.defaults.color = '#5B6577';
 
-  let tempText, sensorText, operText, sumText, pieText, top5Text;
+  const keys = ['temp','sensorTemp','days','operTotal','fac1','dbPie','fac3','fac4','fac5','summary','top5'];
+  let txt = {};
   try {
-    const [t,st,o,s,p,t5] = await Promise.all([
-      fetch(dataUrl('data/temp.csv')),
-      fetch(dataUrl('data/sensor_temp.csv')),
-      fetch(dataUrl('data/oper.csv')),
-      fetch(dataUrl('data/summary.csv')),
-      fetch(dataUrl('data/db_pie.csv')),
-      fetch(dataUrl('data/top5.csv')),
-    ]);
-    if(!t.ok || !st.ok || !o.ok || !s.ok || !p.ok || !t5.ok) throw new Error('CSV 파일 응답 오류 (HTTP)');
-    [tempText, sensorText, operText, sumText, pieText, top5Text] = await Promise.all([t.text(), st.text(), o.text(), s.text(), p.text(), t5.text()]);
+    const res = await Promise.all(keys.map(k => fetch(dataUrl(DATA_FILES[k]))));
+    res.forEach((r,i)=>{ if(!r.ok) throw new Error(`${DATA_FILES[keys[i]]} 응답 오류 (HTTP) — data 폴더의 파일명을 확인하세요`); });
+    const texts = await Promise.all(res.map(r=>r.text()));
+    keys.forEach((k,i)=> txt[k] = texts[i]);
   } catch(e){ showError(e.message); return; }
 
-  let temp, sensorTemp, oper, summary, dbPie, top5Rows;
+  let temp, sensorTemp, fac1, fac3, fac4, fac5, operTotalRows, daysRowsRaw, summary, dbPie, top5Rows;
   try {
-    temp       = toSeriesMap(parseCSV(tempText));
-    sensorTemp = toSeriesMap(parseCSV(sensorText));
-    oper       = toSeriesMap(parseCSV(operText));
-    summary    = toObjects(parseCSV(sumText));
-    dbPie      = toObjects(parseCSV(pieText));
-    top5Rows   = toObjects(parseCSV(top5Text));
+    temp          = toSeriesMap(parseCSV(txt.temp));
+    sensorTemp    = toSeriesMap(parseCSV(txt.sensorTemp));
+    fac1          = toSeriesMap(parseCSV(txt.fac1));
+    fac3          = toSeriesMap(parseCSV(txt.fac3));
+    fac4          = toSeriesMap(parseCSV(txt.fac4));
+    fac5          = toSeriesMap(parseCSV(txt.fac5));
+    operTotalRows = toObjects(parseCSV(txt.operTotal));
+    daysRowsRaw   = toObjects(parseCSV(txt.days));
+    summary       = toObjects(parseCSV(txt.summary));
+    dbPie         = toObjects(parseCSV(txt.dbPie));
+    top5Rows      = toObjects(parseCSV(txt.top5));
     DAYS = temp.labels.length ? temp.labels : DAYS;
   } catch(e){ showError('CSV 파싱 중 오류: ' + e.message); return; }
 
@@ -263,30 +279,19 @@ async function main(){
   mkLine('c-all-temp', temp.names, temp.map, BLUE, 28, '일평균 실내온도');
   mkLine('c-outdoor-vs', sensorTemp.names, sensorTemp.map, BLUE, 28, '온습도계 측정 온도');
 
-  /* 5. 시설별 상세 가동시간 */
-  const byFacility = {};
-  oper.names.forEach(full=>{
-    const [fac, zone] = full.split('·');
-    (byFacility[fac] ??= {names:[], map:{}});
-    byFacility[fac].names.push(zone);
-    byFacility[fac].map[zone] = oper.map[full];
-  });
-  const drawFacility = (id, fac, colors, max) => {
-    const f = byFacility[fac]; if(!f) return;
-    mkLine(id, f.names, f.map, colors, max, '일평균 가동시간');
-  };
-  drawFacility('c-main-oper',  '종합운동장', [BLUE[0],BLUE[1],BLUE[2]], 4);
-  drawFacility('c-park-oper',  '치악체육관', [BLUE[0],BLUE[6],BLUE[2],BLUE[3],BLUE[4],BLUE[5]], 7);
-  drawFacility('c-gym-oper',   '국민체육센터', [BLUE[0],BLUE[1],BLUE[2]], 3);
-  drawFacility('c-park2-oper', '종합체육관', [BLUE[0],BLUE[1],BLUE[2],BLUE[3],BLUE[4]], 16);
+  /* 5. 시설별 상세 가동시간 — 시설별 1파일(5-1·5-3·5-4·5-5) */
+  mkLine('c-main-oper',  fac1.names, fac1.map, BLUE, 4,  '일평균 가동시간'); // 5-1 종합운동장
+  mkLine('c-park-oper',  fac3.names, fac3.map, BLUE, 7,  '일평균 가동시간'); // 5-3 치악체육관
+  mkLine('c-gym-oper',   fac4.names, fac4.map, BLUE, 3,  '일평균 가동시간'); // 5-4 국민체육센터
+  mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 16, '일평균 가동시간'); // 5-5 종합체육관
 
-  /* DB숙소: 구분별 총 가동시간 비중 (파이차트, db_pie.csv) */
+  /* 5-2 DB숙소: 구분별 총 가동시간 비중 (파이차트) */
   const elPie = document.getElementById('c-dg-oper');
   if(elPie){
     const pieRows = dbPie.map(r=>({
-      name: r['구분'],
-      total: num(r['총가동시간']) ?? 0,
-      daily: num(r['하루평균'])
+      name: r['구분'] ?? r['DB숙소_구분'] ?? '',
+      total: num(r['총가동시간']) ?? num(r['총가동시간_시간']) ?? 0,
+      daily: num(r['하루평균']) ?? num(r['하루평균가동시간_시간'])
     }));
     const pieColors = ['#2D6BFF','#C7D6F5','#F59E0B','#22C55E','#7C3AED'];
     const sumTotal = pieRows.reduce((s,r)=>s+r.total,0) || 1;
@@ -327,46 +332,61 @@ async function main(){
     });
   }
 
-  /* 4 & 6 & TOP5: summary.csv
-     판정/조치 컬럼이 CSV에 없으면 누적시간·평균온도 기준으로 자동 생성 */
+  /* 섹션4·6 — 데이터팀 파일에서 직접 구성
+     판정/조치는 누적시간·평균온도 기준으로 자동 생성 */
   function autoJudge(total, avgTemp){
     if(total >= 1000)   return { judge:'risk', action:'누적 가동시간이 가장 높아 장시간 운전일을 우선 점검하고 종료 스케줄을 분리 관리' };
     if(avgTemp >= 25)   return { judge:'warn', action:'평균 실내온도가 높은 편이므로 냉방 설정온도와 가동 시간대를 점검' };
     if(total >= 300)    return { judge:'warn', action:'가동 시간이 높은 편이므로 이용 종료 후 잔여 가동 여부를 점검' };
     return { judge:'ok', action:'현재 안정적으로 운영 중으로 현 수준 유지' };
   }
-  const OPER = summary.map(r=>{
-    const total = num(r['총가동']) ?? 0;
-    const avgTemp = num(r['평균온도']) ?? 0;
-    let judge = (r['판정']||'').trim();
-    let action = r['조치'] || '';
-    if(!judge){ const a = autoJudge(total, avgTemp); judge = a.judge; if(!action) action = a.action; }
-    return {
-      zone: r['구역'], total,
-      days: num(r['가동일']) ?? 0,
-      avgTemp,
-      controllers: num(r['제어기']) ?? 0,
-      chartControllers: num(r['차트제어기']),
-      daily: num(r['일평균']) ?? 0,
-      under: num(r['26도이하']) ?? 0,
-      judge, action
+
+  /* 가동일/가동률 (days.csv) */
+  const daysByZone = {};
+  daysRowsRaw.forEach(r=>{ daysByZone[r['구역']] = num(r['가동일']) ?? num(r['가동일수']) ?? 0; });
+
+  /* 누적 가동시간 + 제어기수 + 제어기당 일평균 (4-2.csv) */
+  const operByZone = {};
+  const operTotal = operTotalRows.map(r=>{
+    const zone = r['구역'];
+    const ctrl = num(r['제어기수']) ?? num(r['제어기']) ?? 0;
+    const o = {
+      zone,
+      total: num(r['누적가동시간']) ?? num(r['총가동']) ?? 0,
+      controllers: ctrl,
+      chartControllers: ctrl,
+      daily: num(r['제어기당_일평균가동시간']) ?? num(r['일평균']) ?? 0
     };
-  });
+    operByZone[zone] = o;
+    return o;
+  }).filter(r=>r.zone);
 
-  const daysRows = [...OPER].sort((a,b)=>b.days-a.days);
+  /* 섹션4 좌: 가동일수 막대 */
+  const daysRows = operTotal.map(o=>({ zone:o.zone, days:daysByZone[o.zone] ?? 0 }))
+                            .sort((a,b)=>b.days-a.days);
   mkBar('c-oper-days', daysRows.map(r=>r.zone), daysRows.map(r=>r.days), daysRows.map((_,i)=>BLUE[i%BLUE.length]), '일');
-  mkOperTotal('c-oper-avg', OPER);
 
+  /* 섹션4 우: 누적 가동시간 가로막대 */
+  mkOperTotal('c-oper-avg', operTotal);
+
+  /* 섹션6: 종합 분석표 (6-1.csv) */
   const tbody = document.querySelector('#summaryTable tbody');
   if(tbody){
-    const ordered = [...OPER].sort((a,b)=>b.total-a.total);
-    tbody.innerHTML = ordered.map((r,i)=>{
+    const tableRows = summary.map(r=>{
+      const zone = r['구역'];
+      const total = num(r['월 가동시간']) ?? num(r['월가동시간']) ?? (operByZone[zone]?.total) ?? 0;
+      const avgTemp = num(r['평균온도']) ?? 0;
+      const { judge, action } = autoJudge(total, avgTemp);
+      return { zone, total, avgTemp, judge, action };
+    }).filter(r=>r.zone).sort((a,b)=>b.total-a.total);
+    tbody.innerHTML = tableRows.map((r,i)=>{
       const cls = r.judge==='risk'?'risk':r.judge==='warn'?'warn-txt':'ok-txt';
       const label = r.judge==='risk'?'우선 점검':r.judge==='warn'?'보정 필요':'유지';
       return `<tr><td class="num sum-rank">${i+1}</td><td class="sum-zone">${r.zone}</td><td class="num sum-hours">${r.total.toFixed(2)}h</td><td class="num sum-temp">${r.avgTemp.toFixed(2)}℃</td><td class="sum-judge ${cls}">${label}</td><td class="sum-action">${r.action}</td></tr>`;
     }).join('');
   }
 
+  /* 섹션6: TOP5 (6-2.csv) */
   const TOP_TOTAL = top5Rows.map(r=>({
     p: r['구역'],
     t: num(r['월누적가동시간_시간']) ?? num(r['총(H)']) ?? num(r['총']) ?? num(r['총가동']) ?? 0,
