@@ -12,7 +12,7 @@
 let DAYS = Array.from({length:31},(_,i)=>`${i+1}`);
 const BLUE = ['#2D6BFF','#E5484D','#22C55E','#F59E0B','#7C3AED','#0F766E','#BE185D','#78716C'];
 const GRID = '#E5E9F0';
-const DATA_VERSION = '20260605-10';
+const DATA_VERSION = '20260608-1';
 let HOLIDAYS = new Set();
 
 function dataUrl(path){
