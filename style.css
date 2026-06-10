@@ -971,6 +971,8 @@ section {
    14. 인쇄 (PDF 저장)
    ══════════════════════════════════════════════════════════════ */
 @media print {
+  html, body { background: #fff !important; }
+  canvas { max-width: 100% !important; }
   body { background: #fff; padding: 0; }
   .page { max-width: none; }
   .print-bar { display: none; }
@@ -982,7 +984,7 @@ section {
 /* ══════════════════════════════════════════════════════════════
    15. 반응형 (모바일 760px 이하)
    ══════════════════════════════════════════════════════════════ */
-@media (max-width: 760px) {
+@media screen and (max-width: 760px) {
   body { padding: 20px 14px 60px; }
 
   .hdr { min-height: auto; padding-bottom: 22px; }
