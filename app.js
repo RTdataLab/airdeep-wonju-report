@@ -22,7 +22,6 @@ const DATA_FILES = {
   days:       '4-1.csv',  // 섹션4-1 — 구역별 가동일수
   operTotal:  '4-2.csv',  // 섹션4-2 — 구역별 누적 가동시간
   fac1:       '5-1.csv',  // 섹션5-1 — 종합운동장 공간별
-  dbPie:      '5-2.csv',  // 섹션5-2 — DB숙소 구분별 비중(파이)
   fac3:       '5-3.csv',  // 섹션5-3 — 치악체육관 공간별
   fac4:       '5-4.csv',  // 섹션5-4 — 국민체육센터 층별
   fac5:       '5-5.csv',  // 섹션5-5 — 종합체육관 공간별
@@ -252,12 +251,8 @@ function showError(msg){
 async function main(){
   Chart.defaults.font.family = "'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif";
   Chart.defaults.color = '#5B6577';
-  // datalabels는 전역 등록되므로 기본값을 숨김으로 두고, 파이차트에서만 켠다(라인/막대 깔끔 유지)
-  if(typeof ChartDataLabels !== 'undefined' && Chart.defaults.plugins){
-    Chart.defaults.plugins.datalabels = { display: false };
-  }
 
-  const keys = ['temp','sensorTemp','days','operTotal','fac1','dbPie','fac3','fac4','fac5','summary','top5'];
+  const keys = ['temp','sensorTemp','days','operTotal','fac1','fac3','fac4','fac5','summary','top5'];
   let txt = {};
   try {
     const res = await Promise.all(keys.map(k => fetch(dataUrl(DATA_FILES[k]))));
@@ -266,7 +261,7 @@ async function main(){
     keys.forEach((k,i)=> txt[k] = texts[i]);
   } catch(e){ showError(e.message); return; }
 
-  let temp, sensorTemp, fac1, fac3, fac4, fac5, operTotalRows, daysRowsRaw, summary, dbPie, top5Rows;
+  let temp, sensorTemp, fac1, fac3, fac4, fac5, operTotalRows, daysRowsRaw, summary, top5Rows;
   try {
     temp          = toSeriesMap(parseCSV(txt.temp));
     sensorTemp    = toSeriesMap(parseCSV(txt.sensorTemp));
@@ -277,7 +272,6 @@ async function main(){
     operTotalRows = toObjects(parseCSV(txt.operTotal));
     daysRowsRaw   = toObjects(parseCSV(txt.days));
     summary       = toObjects(parseCSV(txt.summary));
-    dbPie         = toObjects(parseCSV(txt.dbPie));
     top5Rows      = toObjects(parseCSV(txt.top5));
     DAYS = temp.labels.length ? temp.labels : DAYS;
   } catch(e){ showError('CSV 파싱 중 오류: ' + e.message); return; }
@@ -291,53 +285,6 @@ async function main(){
   mkLine('c-park-oper',  fac3.names, fac3.map, BLUE, 7,  '일평균 가동시간'); // 5-3 치악체육관
   mkLine('c-gym-oper',   fac4.names, fac4.map, BLUE, 3,  '일평균 가동시간'); // 5-4 국민체육센터
   mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 16, '일평균 가동시간'); // 5-5 종합체육관
-
-  /* 5-2 DB숙소: 구분별 총 가동시간 비중 (파이차트) */
-  const elPie = document.getElementById('c-dg-oper');
-  if(elPie){
-    const pieRows = dbPie.map(r=>({
-      name: r['구분'] ?? r['DB숙소_구분'] ?? '',
-      total: num(r['총가동시간']) ?? num(r['총가동시간_시간']) ?? 0,
-      daily: num(r['하루평균']) ?? num(r['하루평균가동시간_시간'])
-    }));
-    const pieColors = ['#2D6BFF','#C7D6F5','#F59E0B','#22C55E','#7C3AED'];
-    const sumTotal = pieRows.reduce((s,r)=>s+r.total,0) || 1;
-    new Chart(elPie,{
-      type:'doughnut',
-      plugins: typeof ChartDataLabels === 'undefined' ? [] : [ChartDataLabels],
-      data:{labels:pieRows.map(r=>r.name),datasets:[{
-        data:pieRows.map(r=>r.total),
-        backgroundColor:pieRows.map((_,i)=>pieColors[i%pieColors.length]),
-        borderColor:'#FFFFFF', borderWidth:2
-      }]},
-      options:{
-        responsive:true, maintainAspectRatio:false, cutout:'58%',
-        plugins:{
-          legend:{display:false},
-          tooltip:{callbacks:{label:c=>{
-            const r = pieRows[c.dataIndex];
-            const pct = (r.total/sumTotal*100).toFixed(1);
-            const dailyTxt = r.daily!=null ? ` · 하루평균 ${r.daily}h` : '';
-            return ` ${r.name}: ${r.total}h (${pct}%)${dailyTxt}`;
-          }}},
-          datalabels:{
-            color: ctx => {
-              const bg = pieColors[ctx.dataIndex % pieColors.length];
-              return bg === '#C7D6F5' ? '#1F2A44' : '#fff';
-            },
-            font:{ size:11, weight:'700', family:"'Pretendard Variable',Pretendard,sans-serif" },
-            formatter:(value, ctx)=>{
-              const r = pieRows[ctx.dataIndex];
-              const pct = (value / sumTotal * 100).toFixed(1);
-              return `${r.name}\n${r.total}h\n${pct}%`;
-            },
-            textAlign:'center',
-            display: ctx => (ctx.dataset.data[ctx.dataIndex] / sumTotal) > 0.05
-          }
-        }
-      }
-    });
-  }
 
   /* 섹션4·6 — 데이터팀 파일에서 직접 구성
      판정/조치는 누적시간·평균온도 기준으로 자동 생성 */

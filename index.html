@@ -9,7 +9,6 @@
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="style.css?v=20260605-5">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 /* 표 헤더 디자인 통일 (전국 리포트와 동일) */
 .analysis-table thead th, .t5tbl thead th { background:#F6F8FC; }
@@ -228,20 +227,6 @@
     </div>
   </div>
 
-  <div class="facility-divider">DB숙소</div>
-  <div class="chart-card">
-    <div class="chart-card-title">DB숙소 구분별 냉난방기 총 가동시간 비중</div>
-    <div class="chart-card-note">단위: h · 조각 크기는 총가동시간 기준, 하루평균 함께 표시</div>
-    <div class="legend-row">
-      <span><i style="background:#2D6BFF;width:12px;height:12px;border-radius:3px"></i>식당 조리실</span>
-      <span><i style="background:#C7D6F5;width:12px;height:12px;border-radius:3px"></i>그 외 DB숙소</span>
-    </div>
-    <div class="cw h260"><canvas id="c-dg-oper"></canvas></div>
-    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
-      <div class="cmnt-text">DB숙소 가동시간은 식당 조리실 726.61h, 그 외 구역 31.30h로 조리실에 약 96%가 집중되어 있습니다. 조리실은 하루 평균 23.44h로 사실상 상시 가동 상태에 가까우므로, 조리 종료 후 자동 OFF와 야간 설정 기준을 우선 점검해야 합니다.</div>
-    </div>
-  </div>
-
   <div class="facility-divider">치악체육관</div>
   <div class="chart-card">
     <div class="chart-card-title">치악체육관 주요 공간별 일평균 냉난방기 가동시간</div>
@@ -330,6 +315,6 @@
 </footer>
 </div>
 
-<script src="app.js?v=20260608-8"></script>
+<script src="app.js?v=20260608-9"></script>
 </body>
 </html>
