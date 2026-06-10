@@ -252,6 +252,10 @@ function showError(msg){
 async function main(){
   Chart.defaults.font.family = "'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif";
   Chart.defaults.color = '#5B6577';
+  // datalabels는 전역 등록되므로 기본값을 숨김으로 두고, 파이차트에서만 켠다(라인/막대 깔끔 유지)
+  if(typeof ChartDataLabels !== 'undefined' && Chart.defaults.plugins){
+    Chart.defaults.plugins.datalabels = { display: false };
+  }
 
   const keys = ['temp','sensorTemp','days','operTotal','fac1','dbPie','fac3','fac4','fac5','summary','top5'];
   let txt = {};
@@ -325,7 +329,7 @@ async function main(){
             formatter:(value, ctx)=>{
               const r = pieRows[ctx.dataIndex];
               const pct = (value / sumTotal * 100).toFixed(1);
-              return `${r.name}\n${pct}%`;
+              return `${r.name}\n${r.total}h\n${pct}%`;
             },
             textAlign:'center',
             display: ctx => (ctx.dataset.data[ctx.dataIndex] / sumTotal) > 0.05
