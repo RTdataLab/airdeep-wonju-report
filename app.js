@@ -22,9 +22,9 @@ const DATA_FILES = {
   days:       '4-1.csv',  // 섹션4-1 — 구역별 가동일수
   operTotal:  '4-2.csv',  // 섹션4-2 — 구역별 누적 가동시간
   fac1:       '5-1.csv',  // 섹션5-1 — 종합운동장 공간별
-  fac3:       '5-3.csv',  // 섹션5-3 — 치악체육관 공간별
-  fac4:       '5-4.csv',  // 섹션5-4 — 국민체육센터 층별
-  fac5:       '5-5.csv',  // 섹션5-5 — 종합체육관 공간별
+  fac3:       '5-2.csv',  // 섹션5-2 — 치악체육관 공간별
+  fac4:       '5-3.csv',  // 섹션5-3 — 국민체육센터 층별
+  fac5:       '5-4.csv',  // 섹션5-4 — 종합체육관 공간별
   summary:    '6-1.csv',  // 섹션6-1 — 종합 분석표
   top5:       '6-2.csv',  // 섹션6-2 — 누적 가동시간 TOP5
 };
@@ -280,11 +280,11 @@ async function main(){
   mkLine('c-all-temp', temp.names, temp.map, BLUE, 28, '일평균 실내온도');
   mkLine('c-outdoor-vs', sensorTemp.names, sensorTemp.map, BLUE, 28, '온습도계 측정 온도');
 
-  /* 5. 시설별 상세 가동시간 — 시설별 1파일(5-1·5-3·5-4·5-5) */
+  /* 5. 시설별 상세 가동시간 — 시설별 1파일(5-1·5-2·5-3·5-4) */
   mkLine('c-main-oper',  fac1.names, fac1.map, BLUE, 4,  '일평균 가동시간'); // 5-1 종합운동장
-  mkLine('c-park-oper',  fac3.names, fac3.map, BLUE, 7,  '일평균 가동시간'); // 5-3 치악체육관
-  mkLine('c-gym-oper',   fac4.names, fac4.map, BLUE, 3,  '일평균 가동시간'); // 5-4 국민체육센터
-  mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 16, '일평균 가동시간'); // 5-5 종합체육관
+  mkLine('c-park-oper',  fac3.names, fac3.map, BLUE, 7,  '일평균 가동시간'); // 5-2 치악체육관
+  mkLine('c-gym-oper',   fac4.names, fac4.map, BLUE, 3,  '일평균 가동시간'); // 5-3 국민체육센터
+  mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 16, '일평균 가동시간'); // 5-4 종합체육관
 
   /* 섹션4·6 — 데이터팀 파일에서 직접 구성
      판정/조치는 누적시간·평균온도 기준으로 자동 생성 */
