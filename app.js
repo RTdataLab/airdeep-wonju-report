@@ -85,6 +85,13 @@ function tickColor(){
   return (ctx)=> HOLIDAYS.has(String(DAYS[ctx.index])) ? '#E5484D' : '#5B6577';
 }
 
+const X_TICKS = {
+  maxRotation: 0,
+  autoSkip: false,
+  font: { size: 9 },
+  color: tickColor()
+};
+
 function toSeriesMap(rows){
   const names = rows[0].slice(1);
   const map = {}; names.forEach(n => map[n] = []);
@@ -123,13 +130,7 @@ function mkLine(id, names, dataMap, colors, max, yLabel){
         label:c=>`${c.dataset.label}: ${c.parsed.y}${isTemp?'℃':'h'}`
       }}},
       scales:{
-        x:{grid:{display:!isTemp,color:GRID},ticks:{
-          maxRotation:0,
-          autoSkip:!isTemp,
-          maxTicksLimit:isTemp ? undefined : 10,
-          font:{size:isTemp ? 9 : 10.5},
-          color:isTemp ? tickColor() : '#5B6577'
-        }},
+        x:{grid:{display:false},ticks:X_TICKS},
         y:isTemp
           ? {min:14,max:30,ticks:{callback:v=>v+'℃',font:{size:9.5}},grid:{color:'#EEF1F6'}}
           : {beginAtZero:false,suggestedMax:max,grid:{color:GRID},title:{display:true,text:yLabel,font:{size:11,weight:'700'},color:'#1F2A44'}}
@@ -148,7 +149,7 @@ function mkBar(id, labels, values, colors, unit='', horizontal=false){
       indexAxis:horizontal?'y':'x',responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed[horizontal?'x':'y']}${unit}`}}},
       scales:{
-        x:{beginAtZero:true,grid:{display:horizontal,color:GRID},ticks:{font:{size:11,weight:'600'},color:'#1F2A44'}},
+        x:{beginAtZero:true,grid:{display:false},ticks:{font:{size:11,weight:'600'},color:'#1F2A44'}},
         y:{beginAtZero:true,grid:{display:!horizontal,color:GRID},ticks:{font:{size:11,weight:'600'},color:'#1F2A44'}}
       }
     }
@@ -212,7 +213,7 @@ function mkOperTotal(id, rows){
         }}}
       },
       scales:{
-        x:{beginAtZero:true,max:xMax,grid:{color:GRID},title:{display:true,text:'누적 가동시간(h)',font:{size:11,weight:'700'}},ticks:{callback:v=>Number(v).toLocaleString(),font:{size:10.5,weight:'600'},color:'#5B6577'}},
+        x:{beginAtZero:true,max:xMax,grid:{display:false},title:{display:true,text:'누적 가동시간(h)',font:{size:11,weight:'700'}},ticks:{callback:v=>Number(v).toLocaleString(),font:{size:10.5,weight:'600'},color:'#5B6577'}},
         y:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:'#5B6577'}}
       }
     },
