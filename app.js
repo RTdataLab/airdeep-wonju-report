@@ -19,8 +19,7 @@ let HOLIDAYS = new Set();
 const DATA_FILES = {
   temp:       '3-1.csv',  // 섹션3-1 — 구역별 일평균 실내온도
   sensorTemp: '3-2.csv',  // 섹션3-2 — 온습도계 설치 구역 온도
-  days:       '4-1.csv',  // 섹션4-1 — 구역별 가동일수
-  operTotal:  '4-2.csv',  // 섹션4-2 — 구역별 누적 가동시간
+  operTotal:  '4-1.csv',  // 섹션4-1 — 구역별 누적 가동시간
   fac1:       '5-1.csv',  // 섹션5-1 — 종합운동장 공간별
   fac3:       '5-2.csv',  // 섹션5-2 — 치악체육관 공간별
   fac4:       '5-3.csv',  // 섹션5-3 — 국민체육센터 층별
@@ -253,7 +252,7 @@ async function main(){
   Chart.defaults.font.family = "'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif";
   Chart.defaults.color = '#5B6577';
 
-  const keys = ['temp','sensorTemp','days','operTotal','fac1','fac3','fac4','fac5','summary','top5'];
+  const keys = ['temp','sensorTemp','operTotal','fac1','fac3','fac4','fac5','summary','top5'];
   let txt = {};
   try {
     const res = await Promise.all(keys.map(k => fetch(dataUrl(DATA_FILES[k]))));
@@ -262,7 +261,7 @@ async function main(){
     keys.forEach((k,i)=> txt[k] = texts[i]);
   } catch(e){ showError(e.message); return; }
 
-  let temp, sensorTemp, fac1, fac3, fac4, fac5, operTotalRows, daysRowsRaw, summary, top5Rows;
+  let temp, sensorTemp, fac1, fac3, fac4, fac5, operTotalRows, summary, top5Rows;
   try {
     temp          = toSeriesMap(parseCSV(txt.temp));
     sensorTemp    = toSeriesMap(parseCSV(txt.sensorTemp));
@@ -271,7 +270,6 @@ async function main(){
     fac4          = toSeriesMap(parseCSV(txt.fac4));
     fac5          = toSeriesMap(parseCSV(txt.fac5));
     operTotalRows = toObjects(parseCSV(txt.operTotal));
-    daysRowsRaw   = toObjects(parseCSV(txt.days));
     summary       = toObjects(parseCSV(txt.summary));
     top5Rows      = toObjects(parseCSV(txt.top5));
     DAYS = temp.labels.length ? temp.labels : DAYS;
@@ -296,11 +294,7 @@ async function main(){
     return { judge:'ok', action:'현재 안정적으로 운영 중으로 현 수준 유지' };
   }
 
-  /* 가동일/가동률 (days.csv) */
-  const daysByZone = {};
-  daysRowsRaw.forEach(r=>{ daysByZone[r['구역']] = num(r['가동일']) ?? num(r['가동일수']) ?? 0; });
-
-  /* 누적 가동시간 + 제어기수 + 제어기당 일평균 (4-2.csv) */
+  /* 누적 가동시간 + 제어기수 + 제어기당 일평균 (4-1.csv) */
   const operByZone = {};
   const operTotal = operTotalRows.map(r=>{
     const zone = r['구역'];
@@ -316,12 +310,7 @@ async function main(){
     return o;
   }).filter(r=>r.zone);
 
-  /* 섹션4 좌: 가동일수 막대 */
-  const daysRows = operTotal.map(o=>({ zone:o.zone, days:daysByZone[o.zone] ?? 0 }))
-                            .sort((a,b)=>b.days-a.days);
-  mkBar('c-oper-days', daysRows.map(r=>r.zone), daysRows.map(r=>r.days), daysRows.map((_,i)=>BLUE[i%BLUE.length]), '일');
-
-  /* 섹션4 우: 누적 가동시간 가로막대 */
+  /* 섹션4-1: 누적 가동시간 가로막대 */
   mkOperTotal('c-oper-avg', operTotal);
 
   /* 섹션6: 종합 분석표 (6-1.csv) */

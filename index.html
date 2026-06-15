@@ -204,23 +204,13 @@
     <div class="sec-note">본 가동시간은 진동센서 기반 추정값이며, 실제 가동시간과 차이가 있을 수 있습니다.</div>
   </div>
 
-  <div class="chart-2col">
-    <!-- 4-1. 구역별 가동일수 -->
-    <div class="chart-card" style="margin-bottom:0">
-      <div class="chart-card-title">원주시설관리공단 구역별 가동일수</div>
-      <div class="cw h246"><canvas id="c-oper-days"></canvas></div>
-      <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
-        <div class="cmnt-text">DB숙소, 국민체육센터, 종합체육관은 31일 모두 가동되어 상시 운영 시설에 가까운 패턴입니다. 종합운동장은 24일, 치악체육관은 21일만 가동되어 행사일 또는 이용일 중심으로 운전된 것으로 보이며, 상시 가동 시설은 자동 종료 기준 점검이 우선입니다.</div>
-      </div>
-    </div>
-    <!-- 4-2. 구역별 누적 가동시간 -->
-    <div class="chart-card" style="margin-bottom:0">
-      <div class="chart-card-title">원주시설관리공단 월별 구역별 전체 제어기 누적 가동시간</div>
-      <div class="chart-card-note">단위: h · 제어기수 및 일평균 가동시간 함께 표시</div>
-      <div class="cw h220"><canvas id="c-oper-avg"></canvas></div>
-      <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
-        <div class="cmnt-text">누적 가동시간 기준 국민체육센터가 658.4h로 가장 길고, 종합체육관 549.9h, DB숙소 467.7h 순입니다. 제어기 1대당 하루평균은 종합체육관이 2.0h로 가장 높아, 기기 수 대비 실제 운전 강도는 종합체육관이 가장 큰 구역입니다.</div>
-      </div>
+  <!-- 4-1. 구역별 누적 가동시간 (data/4-1.csv) -->
+  <div class="chart-card">
+    <div class="chart-card-title">원주시설관리공단 월별 구역별 전체 제어기 누적 가동시간</div>
+    <div class="chart-card-note">단위: h · 제어기수 및 일평균 가동시간 함께 표시</div>
+    <div class="cw h260"><canvas id="c-oper-avg"></canvas></div>
+    <div class="cmnt"><div class="cmnt-bar" style="background:#2D6BFF"></div>
+      <div class="cmnt-text">누적 가동시간 기준 국민체육센터가 658.4h로 가장 길고, 종합체육관 549.9h, DB숙소 467.7h 순입니다. 제어기 1대당 하루평균은 종합체육관이 2.0h로 가장 높아, 기기 수 대비 실제 운전 강도는 종합체육관이 가장 큰 구역입니다.</div>
     </div>
   </div>
 </section>
@@ -340,6 +330,6 @@
 </footer>
 </div>
 
-<script src="app.js?v=20260611-axis1"></script>
+<script src="app.js?v=20260611-s4fix"></script>
 </body>
 </html>
